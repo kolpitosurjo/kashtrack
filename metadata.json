@@ -1,0 +1,6 @@
+{
+  "name": "FinTrack",
+  "description": "Android-style personal finance tracker with daily limits, cash/bank tracking, and category analytics.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
