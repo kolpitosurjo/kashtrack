@@ -749,6 +749,8 @@ function CategoriesScreen({ transactions, categories, currency, onAddCategory, o
   const [view, setView] = useState<'Categories' | 'Monthly' | 'Recurring'>('Categories');
   const [filter, setFilter] = useState('Month');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [isAddingCategory, setIsAddingCategory] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState('');
 
   const filteredTxs = useMemo(() => {
     const now = new Date();
@@ -895,15 +897,50 @@ function CategoriesScreen({ transactions, categories, currency, onAddCategory, o
             ))}
           </div>
           
-          <button 
-            onClick={() => {
-              const name = prompt('New category designation:');
-              if (name) onAddCategory(name);
-            }}
-            className="w-full border-2 border-dashed border-vault-primary border-opacity-30 py-4 rounded-[28px] text-vault-primary text-xs font-bold flex items-center justify-center gap-2 bg-vault-primary bg-opacity-[0.02] hover:bg-opacity-[0.05] transition-all uppercase tracking-widest"
-          >
-            <PlusCircle className="w-4 h-4" /> Define New Group
-          </button>
+          {isAddingCategory ? (
+            <div className="bg-vault-surface border border-vault-border p-6 rounded-[28px] space-y-4 animate-in fade-in slide-in-from-bottom-2">
+              <label className="block text-[10px] font-black text-vault-text-dim uppercase tracking-widest ml-1">New Category Name</label>
+              <input 
+                autoFocus
+                type="text"
+                value={newCategoryName}
+                onChange={(e) => setNewCategoryName(e.target.value)}
+                placeholder="e.g. Shopping"
+                className="w-full bg-vault-bg border border-vault-border rounded-xl px-4 py-3 font-bold text-sm focus:outline-none focus:border-vault-primary"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && newCategoryName.trim()) {
+                    onAddCategory(newCategoryName.trim());
+                    setNewCategoryName('');
+                    setIsAddingCategory(false);
+                  }
+                  if (e.key === 'Escape') setIsAddingCategory(false);
+                }}
+              />
+              <div className="flex gap-2">
+                <button 
+                  onClick={() => setIsAddingCategory(false)}
+                  className="flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest text-vault-text-dim bg-vault-bg"
+                >Cancel</button>
+                <button 
+                  onClick={() => {
+                    if (newCategoryName.trim()) {
+                      onAddCategory(newCategoryName.trim());
+                      setNewCategoryName('');
+                      setIsAddingCategory(false);
+                    }
+                  }}
+                  className="flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest text-white bg-vault-primary shadow-lg shadow-blue-100"
+                >Define Group</button>
+              </div>
+            </div>
+          ) : (
+            <button 
+              onClick={() => setIsAddingCategory(true)}
+              className="w-full border-2 border-dashed border-vault-primary border-opacity-30 py-4 rounded-[28px] text-vault-primary text-xs font-bold flex items-center justify-center gap-2 bg-vault-primary bg-opacity-[0.02] hover:bg-opacity-[0.05] transition-all uppercase tracking-widest"
+            >
+              <PlusCircle className="w-4 h-4" /> Define New Group
+            </button>
+          )}
         </div>
       )}
 

@@ -81,7 +81,7 @@ let dbPromise: Promise<IDBPDatabase<BudgetDB>>;
 
 export const getDB = () => {
   if (!dbPromise) {
-    dbPromise = openDB<BudgetDB>('BudgetDB', 2, {
+    dbPromise = openDB<BudgetDB>('BudgetDB', 3, {
       upgrade(db, oldVersion) {
         if (oldVersion < 1) {
           const txStore = db.createObjectStore('transactions', { keyPath: 'id' });
@@ -90,14 +90,18 @@ export const getDB = () => {
 
           db.createObjectStore('budgets', { keyPath: 'id' });
           db.createObjectStore('settings', { keyPath: 'id' });
+        }
+        
+        if (!db.objectStoreNames.contains('categories')) {
           const catStore = db.createObjectStore('categories', { keyPath: 'name' });
-
           const defaultCategories = ['Food', 'Dorm/Rent', 'University', 'Transport', 'Entertainment', 'Utilities', 'Income', 'Other'];
           defaultCategories.forEach(cat => catStore.put({ name: cat }));
         }
-        
+
         if (oldVersion < 2) {
-          db.createObjectStore('recurring_transactions', { keyPath: 'id' });
+          if (!db.objectStoreNames.contains('recurring_transactions')) {
+            db.createObjectStore('recurring_transactions', { keyPath: 'id' });
+          }
         }
       },
     });
